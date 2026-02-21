@@ -4,6 +4,8 @@ import PricingSection from "./sections/2-PricingSection/PricingSection";
 import TaxesSection from "./sections/3-TaxesSection/TaxesSection";
 import ResultsSection from "./sections/4-ResultsSection/ResultsSection";
 
+//working v1
+
 export default function App() {
   const [investmentPen, setInvestmentPen] = useState(0);
   const [quantity, setQuantity] = useState(0);
