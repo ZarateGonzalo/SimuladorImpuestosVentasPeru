@@ -4,35 +4,37 @@ import PricingSection from "./sections/2-PricingSection/PricingSection";
 import TaxesSection from "./sections/3-TaxesSection/TaxesSection";
 import ResultsSection from "./sections/4-ResultsSection/ResultsSection";
 
-/**
- * APP ROOT
- * All business logic lives here.
- * Child components are dumb inputs / displays.
- */
 export default function App() {
-  // ─── Core business state ─────────────────────────────
-  const [investmentPen, setInvestmentPen] = useState<number>(0);
-  const [quantity, setQuantity] = useState<number>(0);
-  const [salePricePen, setSalePricePen] = useState<number>(0);
+  const [investmentPen, setInvestmentPen] = useState(0);
+  const [quantity, setQuantity] = useState(0);
+  const [salePricePen, setSalePricePen] = useState(0);
 
-  // ─── Taxes ───────────────────────────────────────────
-  const [igvPct, setIgvPct] = useState<number>(18);
-  const [incomeTaxPct, setIncomeTaxPct] = useState<number>(30);
+  const [igvPct, setIgvPct] = useState(18);
+  const [incomeTaxPct, setIncomeTaxPct] = useState(30);
 
-  // ─── Derived calculations (single source of truth) ──
+  const [currencyRate, setCurrecyRate] = useState(3.5);
+  const [igvPaid, setIgvPaid] = useState(0);
+  const [perceptionPaid, setPerceptionPaid] = useState(0);
+
   const results = useMemo(() => {
     const grossRevenue = salePricePen * quantity;
 
-    const igvAmount = grossRevenue - grossRevenue / (igvPct / 100 + 1);
+    const rawIgv = grossRevenue - grossRevenue / (igvPct / 100 + 1);
+    const igvAmount = Math.max(0, rawIgv - igvPaid * currencyRate);
 
     const netSalesNoVAT = grossRevenue - igvAmount;
 
-    const taxableProfit =
-      grossRevenue - investmentPen - igvAmount > 0
-        ? grossRevenue - investmentPen - igvAmount
-        : 0;
+    const rawTaxableProfit = grossRevenue - investmentPen - igvAmount;
+    console.log("gross: " + grossRevenue);
+    console.log("invest: " + investmentPen);
+    console.log("igv: " + igvAmount);
+    const taxableProfit = Math.max(0, rawTaxableProfit);
 
-    const incomeTaxAmount = taxableProfit * (incomeTaxPct / 100);
+    const rawIncomeTax = taxableProfit * (incomeTaxPct / 100);
+    const incomeTaxAmount = Math.max(
+      0,
+      rawIncomeTax - perceptionPaid * currencyRate,
+    );
 
     const netProfit =
       grossRevenue - igvAmount - incomeTaxAmount - investmentPen;
@@ -48,9 +50,17 @@ export default function App() {
       netProfit,
       unitProfit,
     };
-  }, [salePricePen, quantity, igvPct, incomeTaxPct, investmentPen]);
+  }, [
+    currencyRate,
+    salePricePen,
+    quantity,
+    investmentPen,
+    igvPct,
+    incomeTaxPct,
+    igvPaid,
+    perceptionPaid,
+  ]);
 
-  // ─── UI ──────────────────────────────────────────────
   return (
     <main style={{ padding: 24 }}>
       <h1>Simulador de Impuestos (Perú)</h1>
@@ -68,22 +78,19 @@ export default function App() {
       />
 
       <TaxesSection
+        currency={currencyRate}
         igvPct={igvPct}
         incomeTaxPct={incomeTaxPct}
+        igvPaid={igvPaid}
+        perceptionPaid={perceptionPaid}
+        onCurrencyChange={setCurrecyRate}
         onIgvChange={setIgvPct}
         onIncomeTaxChange={setIncomeTaxPct}
+        onIgvPaidChange={setIgvPaid}
+        onPerceptionPaidChange={setPerceptionPaid}
       />
 
-      <ResultsSection
-        investmentPen={investmentPen}
-        grossRevenue={results.grossRevenue}
-        igvAmount={results.igvAmount}
-        netSalesNoVAT={results.netSalesNoVAT}
-        taxableProfit={results.taxableProfit}
-        incomeTaxAmount={results.incomeTaxAmount}
-        netProfit={results.netProfit}
-        unitProfit={results.unitProfit}
-      />
+      <ResultsSection investmentPen={investmentPen} {...results} />
     </main>
   );
 }

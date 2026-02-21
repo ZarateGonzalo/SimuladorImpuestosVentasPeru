@@ -1,14 +1,21 @@
-import React from "react";
+import { useEffect, useState } from "react";
 
-interface PricingSectionProps {
+type PricingSectionProps = {
   salePricePen: number;
   onSalePriceChange: (value: number) => void;
-}
+};
 
 export default function PricingSection({
   salePricePen,
   onSalePriceChange,
 }: PricingSectionProps) {
+  const [localValue, setLocalValue] = useState<string>("0");
+
+  // sync external number → internal string
+  useEffect(() => {
+    setLocalValue(salePricePen.toString());
+  }, [salePricePen]);
+
   return (
     <section>
       <h2>Precio para Clientes</h2>
@@ -17,10 +24,23 @@ export default function PricingSection({
         Precio de venta por unidad (PEN){" "}
         <input
           type="number"
-          min={0}
-          step="0.01"
-          value={salePricePen}
-          onChange={(e) => onSalePriceChange(Number(e.target.value) || 0)}
+          step="any"
+          className="border px-2 w-32"
+          value={localValue}
+          onChange={(e) => {
+            setLocalValue(e.target.value);
+          }}
+          onBlur={() => {
+            if (localValue === "") {
+              setLocalValue("0");
+              onSalePriceChange(0);
+            } else {
+              const num = Number(localValue);
+              const fixed = Number.isFinite(num) ? Number(num.toFixed(2)) : 0;
+              setLocalValue(fixed.toFixed(2));
+              onSalePriceChange(fixed);
+            }
+          }}
         />
       </label>
     </section>

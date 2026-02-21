@@ -1,5 +1,3 @@
-import React from "react";
-
 interface ResultsSectionProps {
   investmentPen: number;
   grossRevenue: number;
@@ -11,42 +9,40 @@ interface ResultsSectionProps {
   unitProfit: number;
 }
 
-export default function ResultsSection({
-  investmentPen,
-  grossRevenue,
-  igvAmount,
-  netSalesNoVAT,
-  taxableProfit,
-  incomeTaxAmount,
-  netProfit,
-  unitProfit,
-}: ResultsSectionProps) {
+export default function ResultsSection(props: ResultsSectionProps) {
   const fmt = (n: number) => n.toFixed(2);
 
   return (
     <section>
       <h2>Resultado</h2>
 
-      <div>Ingresos Brutos: S/ {fmt(grossRevenue)}</div>
+      <div>Ingresos Brutos: S/ {fmt(props.grossRevenue)}</div>
       <div>
-        <strong>IGV: S/ {fmt(igvAmount)}</strong>
+        <strong>IGV a pagar: S/ {fmt(props.igvAmount)}</strong>
       </div>
-      <div style={{ color: netSalesNoVAT < investmentPen ? "#a76f6f" : "" }}>
-        Ingresos Netos (post IGV): S/ {fmt(netSalesNoVAT)} (Inversión:{" "}
-        {investmentPen})
+
+      <div
+        style={{
+          color: props.netSalesNoVAT < props.investmentPen ? "#995e5e" : "",
+        }}
+      >
+        Ingresos Netos (IGV descontado): S/ {fmt(props.netSalesNoVAT)}{" "}
+        (Inversión de Importación S./{props.investmentPen})
       </div>
-      <div>Ganancia Imponible: S/ {fmt(taxableProfit)}</div>
+
+      <div>Ganancia Imponible: S/ {fmt(props.taxableProfit)}</div>
+
       <div>
-        <strong>Impuesto a la Renta: S/ {fmt(incomeTaxAmount)}</strong>
+        <strong>Renta a pagar: S/ {fmt(props.incomeTaxAmount)}</strong>
       </div>
 
       <hr />
 
       <div>
-        <strong>Utilidad Neta Total:</strong> S/ {fmt(netProfit)}
+        <strong>Utilidad Neta:</strong> S/ {fmt(props.netProfit)}
       </div>
       <div>
-        <strong>Utilidad por Unidad:</strong> S/ {fmt(unitProfit)}
+        <strong>Utilidad por Unidad:</strong> S/ {fmt(props.unitProfit)}
       </div>
     </section>
   );
