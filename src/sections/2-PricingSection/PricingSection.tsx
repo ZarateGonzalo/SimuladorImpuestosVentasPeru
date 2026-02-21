@@ -9,9 +9,9 @@ export default function PricingSection({
   salePricePen,
   onSalePriceChange,
 }: PricingSectionProps) {
-  const [localValue, setLocalValue] = useState<string>("0");
+  const [localValue, setLocalValue] = useState("0");
 
-  // sync external number → internal string
+  // sync external → internal (only when parent changes externally)
   useEffect(() => {
     setLocalValue(salePricePen.toString());
   }, [salePricePen]);
@@ -21,14 +21,20 @@ export default function PricingSection({
       <h2>Precio para Clientes</h2>
 
       <label>
-        Precio de venta por unidad (PEN){" "}
+        Precio de venta por unidad (PEN)
         <input
           type="number"
           step="any"
           className="border px-2 w-32"
           value={localValue}
           onChange={(e) => {
-            setLocalValue(e.target.value);
+            const val = e.target.value;
+            setLocalValue(val);
+
+            const num = Number(val);
+            if (val !== "" && Number.isFinite(num)) {
+              onSalePriceChange(num); // 🔥 update immediately
+            }
           }}
           onBlur={() => {
             if (localValue === "") {

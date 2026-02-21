@@ -27,7 +27,6 @@ export default function TaxesSection({
   onIgvPaidChange,
   onPerceptionPaidChange,
 }: TaxesSectionProps) {
-  // initialize ONCE from props
   const [igvStr, setIgvStr] = useState(() => igvPct.toString());
   const [incomeTaxStr, setIncomeTaxStr] = useState(() =>
     incomeTaxPct.toString(),
@@ -37,6 +36,18 @@ export default function TaxesSection({
   const [perceptionStr, setPerceptionStr] = useState(() =>
     perceptionPaid.toString(),
   );
+
+  const handleChange =
+    (setStr: (v: string) => void, cb: (v: number) => void) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const val = e.target.value;
+      setStr(val);
+
+      const num = Number(val);
+      if (val !== "" && Number.isFinite(num)) {
+        cb(num);
+      }
+    };
 
   const handleBlur =
     (str: string, setStr: (v: string) => void, cb: (v: number) => void) =>
@@ -58,21 +69,21 @@ export default function TaxesSection({
       <h2>Impuestos</h2>
 
       <div>
-        IGV (%){" "}
+        IGV (%)
         <input
           type="number"
           value={igvStr}
-          onChange={(e) => setIgvStr(e.target.value)}
+          onChange={handleChange(setIgvStr, onIgvChange)}
           onBlur={handleBlur(igvStr, setIgvStr, onIgvChange)}
         />
       </div>
 
       <div>
-        Impuesto a la Renta (%){" "}
+        Impuesto a la Renta (%)
         <input
           type="number"
           value={incomeTaxStr}
-          onChange={(e) => setIncomeTaxStr(e.target.value)}
+          onChange={handleChange(setIncomeTaxStr, onIncomeTaxChange)}
           onBlur={handleBlur(incomeTaxStr, setIncomeTaxStr, onIncomeTaxChange)}
         />
       </div>
@@ -80,31 +91,31 @@ export default function TaxesSection({
       <hr />
 
       <div>
-        Cambio USD - PEN{" "}
+        Cambio USD - PEN
         <input
           type="number"
           value={currencyStr}
-          onChange={(e) => setCurrencyStr(e.target.value)}
+          onChange={handleChange(setCurrencyStr, onCurrencyChange)}
           onBlur={handleBlur(currencyStr, setCurrencyStr, onCurrencyChange)}
         />
       </div>
 
       <div>
-        IGV pagado en Aduanas (USD){" "}
+        IGV pagado en Aduanas (USD)
         <input
           type="number"
           value={igvPaidStr}
-          onChange={(e) => setIgvPaidStr(e.target.value)}
+          onChange={handleChange(setIgvPaidStr, onIgvPaidChange)}
           onBlur={handleBlur(igvPaidStr, setIgvPaidStr, onIgvPaidChange)}
         />
       </div>
 
       <div>
-        Percepción pagada (USD){" "}
+        Percepción pagada (USD)
         <input
           type="number"
           value={perceptionStr}
-          onChange={(e) => setPerceptionStr(e.target.value)}
+          onChange={handleChange(setPerceptionStr, onPerceptionPaidChange)}
           onBlur={handleBlur(
             perceptionStr,
             setPerceptionStr,
