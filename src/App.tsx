@@ -3,6 +3,7 @@ import InvestmentSection from "./sections/1-InvestmentSection/InvestmentSection"
 import PricingSection from "./sections/2-PricingSection/PricingSection";
 import TaxesSection from "./sections/3-TaxesSection/TaxesSection";
 import ResultsSection from "./sections/4-ResultsSection/ResultsSection";
+import ClientResults from "./sections/5-ClientResults/ClientsResults";
 
 //working v1
 
@@ -93,6 +94,16 @@ export default function App() {
       />
 
       <ResultsSection investmentPen={investmentPen} {...results} />
+
+      <hr />
+
+      <ClientResults
+        investmentPen={results.grossRevenue}
+        quantity={quantity}
+        igvPct={igvPct}
+        incomeTaxPct={incomeTaxPct}
+        currencyRate={currencyRate}
+      />
     </main>
   );
 }

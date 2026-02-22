@@ -32,11 +32,9 @@ export default function ResultsSection(props: ResultsSectionProps) {
 
       <div>Ganancia Imponible: S/ {fmt(props.taxableProfit)}</div>
 
-      <div>
+      <div style={{ paddingBottom: 25 }}>
         <strong>Renta a pagar: S/ {fmt(props.incomeTaxAmount)}</strong>
       </div>
-
-      <hr />
 
       <div>
         <strong>Utilidad Neta:</strong> S/ {fmt(props.netProfit)}
